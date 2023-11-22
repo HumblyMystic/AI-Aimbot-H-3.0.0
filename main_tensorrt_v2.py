@@ -145,7 +145,7 @@ def main():
 
             if visuals:
                 cv2.imshow('Live Feed', npImg)
-                if (cv2.waitKey(1) & 0xFF) == ord('q'):
+                if (cv2.waitKey(1) & 0xFF) == aaQuitKey:
                     exit()
 
     camera.stop()
