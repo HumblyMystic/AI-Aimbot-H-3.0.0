@@ -7,16 +7,23 @@ screenShotWidth = 320
 aaRightShift = 0
 
 # Autoaim mouse movement amplifier
-aaMovementAmp = .4
+aaMovementAmp = 0.8
 
 # Person Class Confidence
-confidence = 0.4
+confidence = 0.6
 
 # What key to press to quit and shutdown the autoaim
-aaQuitKey = "Q"
+aaAimKey = 0x01 # 0xA1 = Right Shift | 0x01 = Left Mouse Button
+
+autoAimKey = 0x63 # 0x63 = Numpad 3
+
+# What key to press to quit and shutdown the autoaim
+aaQuitKey = 0x60 # 0x60 = Numpad 0
 
 # If you want to main slightly upwards towards the head
-headshot_mode = True
+headshot_mode = False
+
+headShotKey = 0x61
 
 # Displays the Corrections per second in the terminal
 cpsDisplay = True
@@ -26,6 +33,8 @@ visuals = False
 
 # Smarter selection of people
 centerOfScreen = True
+
+
 
 # ONNX ONLY - Choose 1 of the 3 below
 # 1 - CPU
