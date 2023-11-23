@@ -1,3 +1,5 @@
+# main_tensorrt_v2.py
+
 from utils.general import cv2, non_max_suppression, xyxy2xywh
 from models.common import DetectMultiBackend
 from unittest import result
@@ -11,6 +13,9 @@ import win32con
 
 from config import aaMovementAmp, aaRightShift, aaAimKey, aaQuitKey, confidence, autoAimKey, headShotKey, cpsDisplay, visuals, centerOfScreen
 import gameSelection
+
+from PyQt5.QtWidgets import QApplication
+from mod_status import ModStatusUI
 
 class Toggle:
     def __init__(self):
@@ -109,6 +114,12 @@ def draw_visualization(npImg, targets):
 
 def main():
     global autoAim, headshot_mode
+    
+    # Create an instance of ModStatusUI
+    mod_status_ui = ModStatusUI()
+    
+    # Show the UI window
+    mod_status_ui.show()
 
     camera, cWidth, cHeight = gameSelection.gameSelection()
     model = load_model()
@@ -153,7 +164,9 @@ def main():
 
 if __name__ == "__main__":
     try:
+        app = QApplication([])
         main()
+        app.exec_()
     except Exception as e:
         import traceback
         traceback.print_exception(type(e), e, e.__traceback__)
