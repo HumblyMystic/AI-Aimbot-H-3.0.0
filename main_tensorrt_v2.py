@@ -16,6 +16,8 @@ import gameSelection
 
 from PyQt5.QtWidgets import QApplication
 from mod_status import ModStatusUI
+import threading
+from PyQt5.QtCore import QThread
 
 class Toggle:
     def __init__(self):
@@ -32,7 +34,19 @@ class Toggle:
 def load_model():
     return DetectMultiBackend('yolov5s320Half.engine', device=torch.device('cuda'), dnn=False, data='', fp16=True)
 
-def process_frame(camera, cWidth, cHeight, model):
+class ProcessingThread(QThread):
+    def __init__(self, camera, cWidth, cHeight, model):
+        super().__init__()
+        self.camera = camera
+        self.cWidth = cWidth
+        self.cHeight = cHeight
+        self.model = model
+
+def process_frames(camera, cWidth, cHeight, model):
+    # Long-running processing task
+    with torch.no_grad():
+        while win32api.GetAsyncKeyState(aaQuitKey) == 0:
+            npImg, targets = process_frame(camera, cWidth, cHeight, model)
     npImg = cp.array([camera.get_latest_frame()])
     if npImg.shape[3] == 4:
         npImg = npImg[:, :, :, :3]
@@ -115,6 +129,11 @@ def draw_visualization(npImg, targets):
 def main():
     global autoAim, headshot_mode
     
+    # Create a separate thread for the processing task
+    processing_thread = threading.Thread(target=process_frame, args=(camera, cWidth, cHeight, model))
+    processing_thread.start()
+
+    
     # Create an instance of ModStatusUI
     mod_status_ui = ModStatusUI()
     
@@ -161,10 +180,19 @@ def main():
 
     camera.stop()
 
-
 if __name__ == "__main__":
     try:
         app = QApplication([])
+
+        # Load model and initialize camera, cWidth, cHeight here
+        model = load_model()
+        camera = # Initialize your camera here
+        cWidth = # Initialize cWidth here
+        cHeight = # Initialize cHeight here
+
+        ui = ModStatusUI(camera, cWidth, cHeight, model, process_frame)
+        ui.show()
+
         main()
         app.exec_()
     except Exception as e:

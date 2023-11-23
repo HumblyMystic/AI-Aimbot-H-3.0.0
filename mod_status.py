@@ -1,8 +1,26 @@
 from PyQt5.QtWidgets import QLabel, QWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+import numpy as np
+import pandas as pd
+
+class Worker(QThread):
+    data_ready = pyqtSignal(np.ndarray, pd.DataFrame)
+
+    def __init__(self, camera, cWidth, cHeight, model, process_frame):
+        super().__init__()
+        self.camera = camera
+        self.cWidth = cWidth
+        self.cHeight = cHeight
+        self.model = model
+        self.process_frame = process_frame
+
+    def run(self):
+        while True:
+            npImg, targets = self.process_frame(self.camera, self.cWidth, self.cHeight, self.model)
+            self.data_ready.emit(npImg, targets)
 
 class ModStatusUI(QWidget):
-    def __init__(self):
+    def __init__(self, camera, cWidth, cHeight, model, process_frame):
         super().__init__()
         self.setWindowTitle("Mod Status UI")
         self.setWindowFlags(Qt.WindowStaysOnTopHint) # Set the window to be always on top
@@ -15,11 +33,11 @@ class ModStatusUI(QWidget):
         self.mod2_label = QLabel("Mod 2: Off", self)
         self.mod2_label.setGeometry(50, 80, 200, 20) # Set the position and size of the label
 
-        # Update the status of the mods dynamically
-        self.update_mod_status()
+        self.worker = Worker(camera, cWidth, cHeight, model, process_frame)
+        self.worker.data_ready.connect(self.update_mod_status)
+        self.worker.start()
 
-    def update_mod_status(self):
-        # Update the status of the mods based on the actual status of your mods
+    def update_mod_status(self, npImg, targets):
         mod1_status = get_mod_status("Mod 1")  # Replace with your logic to get the status of Mod 1
         mod2_status = get_mod_status("Mod 2")  # Replace with your logic to get the status of Mod 2
 
