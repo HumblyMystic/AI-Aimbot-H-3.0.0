@@ -29,7 +29,7 @@ headShotKey = 0x61
 cpsDisplay = True
 
 # Set to True if you want to get the visuals
-visuals = True
+visuals = False
 
 # Smarter selection of people
 centerOfScreen = True
